@@ -7,7 +7,7 @@ export const UseCategoryStore = defineStore('category', () => {
 
     const getList = async () => {
         const data = await getCategory();
-        console.log(data);
+        // console.log(data,'首页导航');
         categoryList.value = data.result;
     }
     return { getList, categoryList }

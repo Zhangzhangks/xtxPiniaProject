@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
-export const getBanner = () => {
-    return request('/home/banner', 'get')
+export const getBanner = (distributionSite = 1) => {
+    return request('/home/banner', 'get', { distributionSite })
 }
 /**
  * 新鲜好物
