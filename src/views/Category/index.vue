@@ -1,5 +1,5 @@
 <template>
-  <router-view></router-view>
+    <div>category</div>
 </template>
 <script setup >
 import { ref, reactive } from 'vue'

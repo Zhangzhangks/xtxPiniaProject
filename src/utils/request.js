@@ -16,7 +16,7 @@ instance.interceptors.response.use(res => {
     return Promise.reject(error)
 })
 
-export default function request(url, method, submit) {
+export default function request(url, method = 'get', submit) {
     return instance({
         url,
         method,
