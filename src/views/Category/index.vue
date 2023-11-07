@@ -1,35 +1,10 @@
 <script setup>
-import { getCategoryApi } from '@/apis/category'
-import { onBeforeRouteUpdate, useRoute } from 'vue-router';
-import { getBanner } from '@/apis/home'
-import { ref, onMounted } from 'vue';
+import { useBannerList } from './composiable/useTopCategory.js'
+import { useBanner } from './composiable/useBanner.js'
+
 import GoodsList from '../Home/components/GoodsList.vue';
-const bannerList = ref('');
-onMounted(async () => {
-
-})
-const TopCategory = ref({});
-const route = useRoute();
-// 路有缓存问题第二种
-const getValue = async (id) => {
-    const { result } = await getCategoryApi(id || route.params.id)
-    // console.log(result, '二级类目');
-    TopCategory.value = result;
-}
-onBeforeRouteUpdate((to, from) => {
-     // 存在问题：使用最新的路由参数请求最新的分类数据
-    getValue(to.params.id)
-})
-
-const getbanner = async () => {
-    const Bannerresult = await getBanner('2');
-    // console.log(Bannerresult, '二级轮播图');
-    bannerList.value = Bannerresult.result;
-}
-onMounted(() => {
-    getbanner()
-    getValue()
-})
+const { bannerList } = useBanner()
+const { TopCategory } = useBannerList()
 </script>
 
 <template>
@@ -54,7 +29,7 @@ onMounted(() => {
                 <h3>全部分类</h3>
                 <ul>
                     <li v-for="i in TopCategory.children" :key="i.id">
-                        <RouterLink to="/">
+                        <RouterLink :to="`/category/sub/${i.id}`">
                             <img :src="i.picture" />
                             <p>{{ i.name }}</p>
                         </RouterLink>

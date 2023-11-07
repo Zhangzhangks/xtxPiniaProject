@@ -6,7 +6,7 @@ import GoodList from './GoodsList.vue'
 const BrandList = ref('')
 onMounted(async () => {
     const { result } = await getBrand();
-    console.log(result);
+    // console.log(result);
     BrandList.value = result
 })
 </script>
@@ -121,7 +121,7 @@ onMounted(async () => {
             }
         }
 
-      
+
     }
 }
 </style>
