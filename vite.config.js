@@ -17,6 +17,9 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  server: {
+    open: true
+  },
   // 定制主题
   css: {
     preprocessorOptions: {
@@ -29,4 +32,5 @@ export default defineConfig({
       },
     },
   },
+
 });

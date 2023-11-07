@@ -14,7 +14,13 @@ onMounted(() => {
     <LayoutNav />
     <LayoutHeader />
 
-    <RouterView />
+    <!-- 破坏路有缓存 -->
+    <!-- 缓存问题：当路由path一样，参数不同的时候会选择直接复用路由对应的组件
+            解决方案：
 
+            1. 给 routerv-view 添加key属性，破坏缓存
+            2. 使用 onBeforeRouteUpdate钩子函数，做精确更新 -->
+    <!-- <RouterView :key="$route.fullPath" /> -->
+    <RouterView></RouterView>
     <LayoutFooter />
 </template>

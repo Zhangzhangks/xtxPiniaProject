@@ -1,21 +1,34 @@
 <script setup>
 import { getCategoryApi } from '@/apis/category'
-import { useRoute } from 'vue-router';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { getBanner } from '@/apis/home'
 import { ref, onMounted } from 'vue';
+import GoodsList from '../Home/components/GoodsList.vue';
 const bannerList = ref('');
 onMounted(async () => {
 
 })
 const TopCategory = ref({});
 const route = useRoute();
-onMounted(async () => {
-    const { result } = await getCategoryApi(route.params.id)
-    console.log(result, '二级类目');
+// 路有缓存问题第二种
+const getValue = async (id) => {
+    const { result } = await getCategoryApi(id || route.params.id)
+    // console.log(result, '二级类目');
     TopCategory.value = result;
+}
+onBeforeRouteUpdate((to, from) => {
+     // 存在问题：使用最新的路由参数请求最新的分类数据
+    getValue(to.params.id)
+})
+
+const getbanner = async () => {
     const Bannerresult = await getBanner('2');
-    console.log(Bannerresult, '二级');
-    bannerList.value = Bannerresult.result
+    // console.log(Bannerresult, '二级轮播图');
+    bannerList.value = Bannerresult.result;
+}
+onMounted(() => {
+    getbanner()
+    getValue()
 })
 </script>
 
@@ -37,7 +50,25 @@ onMounted(async () => {
                     </el-carousel-item>
                 </el-carousel>
             </div>
-
+            <div class="sub-list">
+                <h3>全部分类</h3>
+                <ul>
+                    <li v-for="i in TopCategory.children" :key="i.id">
+                        <RouterLink to="/">
+                            <img :src="i.picture" />
+                            <p>{{ i.name }}</p>
+                        </RouterLink>
+                    </li>
+                </ul>
+            </div>
+            <div class="ref-goods" v-for="item in TopCategory.children" :key="item.id">
+                <div class="head">
+                    <h3>{{ item.name }}</h3>
+                </div>
+                <div class="body">
+                    <GoodsList v-for="good in item.goods" :good="good" :key="good.id" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -47,8 +78,6 @@ onMounted(async () => {
 .home-banner {
     width: 1240px;
     height: 500px;
-
-
 
     img {
         width: 100%;
