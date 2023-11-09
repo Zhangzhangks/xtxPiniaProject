@@ -1,7 +1,51 @@
 <script setup>
+import { onMounted, ref, reactive } from 'vue';
 import { useSubCategory } from './composiables/useSubCategory'
+import { getSubCategoryAPI } from '@/apis/subCategory'
+import { useRoute } from 'vue-router';
+import GoodsItems from '../Home/components/GoodsList.vue';
+
+// 二级分类导航名称
+// console.log(subcategory);
+
+const subGoodList = ref([]);
 const { subcategory } = useSubCategory();
-console.log(subcategory);
+const route = useRoute();
+
+const reqData = reactive({
+    categoryId: route.params.id,
+    page: 1,//页数
+    pageSize: 20,//每页几条
+    sortField: 'publishTime'
+
+});
+const getSubGoodList = async () => {
+    let { result } = await getSubCategoryAPI(reqData);
+    subGoodList.value = result.items
+    // console.log(result,'二级分类的数据');
+}
+onMounted(() => {
+    getSubGoodList();
+
+})
+
+// 切换筛选条件
+const disabled = ref(false)
+const loading = ref(false)
+const tabChange = () => {
+    reqData.page = 1
+    getSubGoodList(reqData)
+}
+const load = async function () {
+    loading.value = true
+    reqData.page++;
+    let { result } = await getSubCategoryAPI(reqData);
+    subGoodList.value = [...subGoodList.value, ...result.items]
+    if (result.items.length === 0) {
+        loading.value = false;
+        return disabled.value = true
+    }
+}
 </script>
 
 <template>
@@ -16,14 +60,20 @@ console.log(subcategory);
             </el-breadcrumb>
         </div>
         <div class="sub-container">
-            <el-tabs>
+            <el-tabs v-model="reqData.sortField" @tab-click="tabChange">
                 <el-tab-pane label="最新商品" name="publishTime"></el-tab-pane>
                 <el-tab-pane label="最高人气" name="orderNum"></el-tab-pane>
                 <el-tab-pane label="评论最多" name="evaluateNum"></el-tab-pane>
             </el-tabs>
             <div class="body">
                 <!-- 商品列表-->
-                
+                <ul v-infinite-scroll="load" class="infinite-list" :infinite-scroll-disabled="disabled">
+                    <li v-for="item in subGoodList" ::key="item.id" class="infinite-list-item">
+                        <GoodsItems :good="item" />
+                    </li>
+                </ul>
+                <p v-if="loading">Loading...</p>
+                <p v-else>No more</p>
             </div>
         </div>
     </div>
@@ -83,7 +133,12 @@ console.log(subcategory);
         display: flex;
         justify-content: center;
     }
+}
 
-
+.infinite-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
 }
 </style>

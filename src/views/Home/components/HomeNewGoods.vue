@@ -16,7 +16,7 @@ onMounted(async () => {
         <template #default>
             <ul class="goods-list">
                 <li v-for="item in newGoodsList" :key="item.id">
-                    <RouterLink to="/">
+                    <RouterLink :to="`/detail/${item.id}`">
                         <img v-lazy="item.picture" alt="" />
                         <p class="name">{{ item.name }}</p>
                         <p class="price">&yen;{{ item.price }}</p>
