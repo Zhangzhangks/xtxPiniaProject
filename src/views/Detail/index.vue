@@ -1,10 +1,9 @@
 <script setup>
 import { getDetail } from '@/apis/detail'
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRoute } from 'vue-router';
 import detailhot from './components/detailHot.vue'
-import imgaeView from '@/components/goodImage.vue'
-import goodsSku from '@/components/goodSku.vue'
+
 const goods = ref({});
 const route = useRoute()
 const getGoods = async () => {
@@ -16,6 +15,17 @@ const getGoods = async () => {
 onMounted(() => {
     getGoods()
 })
+
+const data = reactive({
+    sku: {}
+})
+const { sku } = toRefs(data)
+// 拿到子组件的有效sku
+const getEffectiveSku = (playload) => {
+  
+    sku.value = playload;
+    console.log(sku.value);
+}
 </script>
 
 <template>
@@ -39,7 +49,7 @@ onMounted(() => {
                     <div class="goods-info">
                         <div class="media">
                             <!-- 图片预览区 -->
-                            <imgaeView :image-list="goods.mainPictures"></imgaeView>
+                            <XtxgoodView :image-list="goods.mainPictures"></XtxgoodView>
                             <!-- 统计数量 -->
                             <ul class="goods-sales">
                                 <li>
@@ -88,7 +98,7 @@ onMounted(() => {
                                 </dl>
                             </div>
                             <!-- sku组件 -->
-                            <goodsSku />
+                            <XtxgoodSku :goods="goods" @emitEffectiveSku="getEffectiveSku" />
                             <!-- 数据组件 -->
 
                             <!-- 按钮组件 -->

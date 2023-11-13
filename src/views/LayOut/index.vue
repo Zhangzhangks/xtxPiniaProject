@@ -19,7 +19,8 @@ onMounted(() => {
             解决方案：
 
             1. 给 routerv-view 添加key属性，破坏缓存
-            2. 使用 onBeforeRouteUpdate钩子函数，做精确更新 -->
+            2. 使用 onBeforeRouteUpdate钩子函数，做精确更新 
+            实现方法在 D:\VueProject\xtxPiniaProject\src\views\Category\composiable\useTopCategory -->
     <!-- <RouterView :key="$route.fullPath" /> -->
     <RouterView></RouterView>
     <LayoutFooter />

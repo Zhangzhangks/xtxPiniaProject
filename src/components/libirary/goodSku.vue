@@ -1,18 +1,31 @@
-<script setup>
-import { onMounted, ref } from 'vue'
+<script setup name='goodSku'>
+import { onMounted, reactive, ref, toRefs } from 'vue'
 import powerSet from '@/vender/powerSet'
 import axios from 'axios'
 // 商品数据
-const goods = ref({})
+
+const props = defineProps(['goods'])
+// const {goods} = toRefs(props)
+const goods = ref('')
 const getGoods = async () => {
     // 1135076  初始化就有无库存的规格
     // 1369155859933827074 更新之后有无库存项（蓝色-20cm-中国）
     const res = await axios.get('http://pcapi-xiaotuxian-front-devtest.itheima.net/goods?id=1369155859933827074')
-    console.log(res.data.result);
+
     goods.value = res.data.result
 };
 let pathMap = null;
 let splider = '☆'
+// 定义一个有效的Sku数据
+// 定义事件
+const emit = defineEmits(['emitEffectiveSku'])
+const EffectiveSku = reactive({
+    specsText: '',
+    inventory: '',
+    oldPrice: '',
+    price: '',
+    skuId: ''
+})
 onMounted(async function () {
     await getGoods()
     pathMap = effectiveSkus(goods.value)
@@ -43,7 +56,27 @@ const selectChange = (item, val) => {
     // 测试选中数组函数
     // let zks = getSelectArr(goods.value.specs)
     // console.log(zks, '获取生成');
-    clickDisabled(goods.value.specs, pathMap)
+    // 点击生产
+    clickDisabled(goods.value.specs, pathMap);
+    // 生产有效的sku
+    const index = getSelectArr(goods.value.specs).findIndex(item => item === undefined);
+    if (index > -1) {
+        // console.log('找到了,不可以产出');
+        emit('emitEffectiveSku', {})
+    } else {
+        // console.log('找不到 可以产出');
+        let str = getSelectArr(goods.value.specs).join(splider);
+        let id = pathMap[str][0];
+        let sku = goods.value.skus.find(item => item.id === id)
+        // console.log(sku);
+        EffectiveSku.skuId = id;
+        EffectiveSku.specsText = str;
+        EffectiveSku.inventory = sku.inventory;
+        EffectiveSku.oldPrice = sku.oldPrice;
+        EffectiveSku.price = sku.price;
+        // console.log(EffectiveSku);
+        emit('emitEffectiveSku', EffectiveSku)
+    }
 }
 // sku生成
 const effectiveSkus = (goods) => {
@@ -117,7 +150,7 @@ const getSelectArr = (specs) => {
 }
 //点击时禁用
 const clickDisabled = (specs, pathMap) => {
-    console.log(pathMap);
+    // console.log(pathMap);
     specs.forEach((item, index) => {
         // 1. 点击时得到选中的数组
         let clickSkuGoods = getSelectArr(specs);
@@ -127,15 +160,18 @@ const clickDisabled = (specs, pathMap) => {
             clickSkuGoods[index] = sub.name;
             //生成key去匹配
             const key = clickSkuGoods.filter(item => item).join(splider);
-            console.log(key);
+            // console.log(key);
             if (pathMap[key]) {
-                sub.disabled = false
+                sub.disabled = false;
+
             } else {
                 sub.disabled = true
             }
         })
     })
 }
+
+
 </script>
 
 <template>

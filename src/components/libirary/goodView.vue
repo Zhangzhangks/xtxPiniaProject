@@ -1,4 +1,4 @@
-<script setup>
+<script setup name='goodView'>
 import { reactive, ref, watch } from 'vue';
 import { useMouseInElement } from '@vueuse/core'
 
