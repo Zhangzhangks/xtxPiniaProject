@@ -14,7 +14,7 @@
                 <input type="text" placeholder="搜一搜">
             </div>
             <!-- 头部购物车 -->
-
+            <HomeCart></HomeCart>
         </div>
         <sticky />
     </header>
@@ -22,6 +22,7 @@
 
 <script setup>
 import { UseCategoryStore } from '@/store/module/category'
+import HomeCart from './HomeCart.vue';
 import sticky from './stickyComponents.vue'
 import { storeToRefs } from 'pinia';
 const { categoryList } = storeToRefs(UseCategoryStore())

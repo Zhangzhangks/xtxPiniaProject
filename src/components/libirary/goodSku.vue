@@ -3,17 +3,17 @@ import { onMounted, reactive, ref, toRefs } from 'vue'
 import powerSet from '@/vender/powerSet'
 import axios from 'axios'
 // 商品数据
-
+const emitImg = ref('')
 const props = defineProps(['goods'])
-// const {goods} = toRefs(props)
-const goods = ref('')
-const getGoods = async () => {
-    // 1135076  初始化就有无库存的规格
-    // 1369155859933827074 更新之后有无库存项（蓝色-20cm-中国）
-    const res = await axios.get('http://pcapi-xiaotuxian-front-devtest.itheima.net/goods?id=1369155859933827074')
+const { goods } = toRefs(props)
+// const goods = ref('')
+// const getGoods = async () => {
+//     // 1135076  初始化就有无库存的规格
+//     // 1369155859933827074 更新之后有无库存项（蓝色-20cm-中国）
+//     const res = await axios.get('http://pcapi-xiaotuxian-front-devtest.itheima.net/goods?id=1369155859933827074')
 
-    goods.value = res.data.result
-};
+//     goods.value = res.data.result
+// };
 let pathMap = null;
 let splider = '☆'
 // 定义一个有效的Sku数据
@@ -24,10 +24,11 @@ const EffectiveSku = reactive({
     inventory: '',
     oldPrice: '',
     price: '',
-    skuId: ''
+    skuId: '',
+    img: ''
 })
 onMounted(async function () {
-    await getGoods()
+    // await getGoods()
     pathMap = effectiveSkus(goods.value)
     initDisabled(goods.value.specs, pathMap)
 
@@ -53,14 +54,18 @@ const selectChange = (item, val) => {
         });
         val.selected = true
     }
+
+    if (val.picture) {
+        emitImg.value = val.picture
+    }
     // 测试选中数组函数
     // let zks = getSelectArr(goods.value.specs)
     // console.log(zks, '获取生成');
     // 点击生产
     clickDisabled(goods.value.specs, pathMap);
     // 生产有效的sku
-    const index = getSelectArr(goods.value.specs).findIndex(item => item === undefined);
-    if (index > -1) {
+    const flag = getSelectArr(goods.value.specs).every(item => item !== undefined);
+    if (!flag) {
         // console.log('找到了,不可以产出');
         emit('emitEffectiveSku', {})
     } else {
@@ -74,6 +79,7 @@ const selectChange = (item, val) => {
         EffectiveSku.inventory = sku.inventory;
         EffectiveSku.oldPrice = sku.oldPrice;
         EffectiveSku.price = sku.price;
+        EffectiveSku.img = emitImg.value
         // console.log(EffectiveSku);
         emit('emitEffectiveSku', EffectiveSku)
     }

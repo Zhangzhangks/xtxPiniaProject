@@ -3,12 +3,14 @@ import { getDetail } from '@/apis/detail'
 import { onMounted, reactive, ref, toRefs } from 'vue';
 import { useRoute } from 'vue-router';
 import detailhot from './components/detailHot.vue'
-
+import xtxSku from '@/components/XtxSku/index.vue'
+import { useCartStore } from '@/store/module/cart';
+import { ElMessage } from 'element-plus';
 const goods = ref({});
 const route = useRoute()
 const getGoods = async () => {
     let { result } = await getDetail(route.params.id);
-    // console.log(result);
+
     goods.value = result;
 }
 
@@ -17,14 +19,37 @@ onMounted(() => {
 })
 
 const data = reactive({
-    sku: {}
+    skuobj: {}
 })
-const { sku } = toRefs(data)
+const count = ref(1);
+
+const { skuobj } = toRefs(data)
 // 拿到子组件的有效sku
 const getEffectiveSku = (playload) => {
-  
-    sku.value = playload;
-    console.log(sku.value);
+    skuobj.value = playload;
+}
+
+
+const { addCartStore } = useCartStore()
+const addCart = () => {
+    if (skuobj.value.skuId) {
+        // 已选择完整规格
+        addCartStore({
+            id: goods.value.id,
+            name: goods.value.name,
+            pictures: skuobj.value.img || goods.value.mainPictures[0],
+            price: goods.value.price,
+            count: count.value,
+            skuId: skuobj.value.skuId,
+            spcesText: skuobj.value.specsText,
+            selected: true,
+            inventory: skuobj.value.inventory,
+        })
+    }
+    else {
+        // 提示用户没有选择
+        ElMessage.warning('请选择规格');
+    }
 }
 </script>
 
@@ -97,13 +122,15 @@ const getEffectiveSku = (playload) => {
                                     </dd>
                                 </dl>
                             </div>
+
+                            <!-- <xtxSku :goods="goods" @change="getEffectiveSku"></xtxSku> -->
                             <!-- sku组件 -->
                             <XtxgoodSku :goods="goods" @emitEffectiveSku="getEffectiveSku" />
                             <!-- 数据组件 -->
-
+                            <el-input-number v-model="count" />
                             <!-- 按钮组件 -->
                             <div>
-                                <el-button size="large" class="btn">
+                                <el-button size="large" class="btn" @click="addCart">
                                     加入购物车
                                 </el-button>
                             </div>
