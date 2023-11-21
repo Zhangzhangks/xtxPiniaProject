@@ -9,9 +9,16 @@ const routes = [
             { path: 'category/:id', component: () => import('@/views/Category/index.vue') },
             { path: 'category/sub/:id', component: () => import('@/views/SubCategory/index.vue') },
             { path: 'detail/:id', component: () => import('@/views/Detail/index.vue') },
-            { path: 'cartList', component: () => import('@/views/CartList/index.vue') }
-        ],
+            { path: 'cartList', component: () => import('@/views/CartList/index.vue') },
+            { path: 'checkout', component: () => import('@/views/Checkout/index.vue') },
+            { path: 'pay', component: () => import('@/views/pay/index.vue') },
+            {
+                path: 'paycallback', // 注意路径，必须是paycallback
+                component: () => import('@/views/pay/callback.vue')
+            },
+        ]
     },
+
     { path: "/login", component: () => import("@/views/Login/index.vue") },
 
 ];

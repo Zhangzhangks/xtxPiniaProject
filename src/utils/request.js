@@ -21,7 +21,8 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(res => {
     return res.data
 }, (error) => {
-    if (error.response.status === 401) {
+
+    if (error.response?.status === 401) {
         const userStore = useUserStore()
         ElMessage({
             message: '登陆状态已过期!',

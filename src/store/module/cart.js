@@ -6,17 +6,17 @@ import { insertCartAPI, getCartAPI, delCartAPI } from "@/apis/cart";
 export const useCartStore = defineStore(
     "cart",
     () => {
-        const { userInfo } = storeToRefs(useUserStore())
-        console.log(userInfo);
+
+        const userStore = useUserStore();
+
         const cartList = ref([]);
         const addCartStore = async (playLoad) => {
             // 是否登录
-            if (userInfo && userInfo.value?.token) {
+            if (userStore && userStore.userInfo?.token) {
                 // 登录
                 //  发送请求
                 await insertCartAPI({ skuId: playLoad.skuId, count: playLoad.count })
                 findNewCartList()
-
             } else {
                 //添加购物车
                 //  是否添加过
@@ -34,7 +34,7 @@ export const useCartStore = defineStore(
 
         };
         const deleteCart = async (skuId) => {
-            if (userInfo.value.token) {
+            if (userStore.userInfo.token) {
                 await delCartAPI([skuId])
                 findNewCartList()
             }
@@ -47,7 +47,7 @@ export const useCartStore = defineStore(
         // 获取最新购物车
         async function findNewCartList() {
             const res = await getCartAPI();
-            cartList.value = res.result
+            cartList.value = res.result;
         }
 
 

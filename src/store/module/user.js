@@ -12,22 +12,22 @@ export const useUserStore = defineStore("user", () => {
     const { cartList } = storeToRefs(useCartStore())
     const { clearCart, findNewCartList } = useCartStore()
     const userInfo = ref({});
-
     const getUserInfo = async (playload = {}) => {
         const res = await loginApi(playload)
         userInfo.value = res.result;
-        // megerCartInfo()
+        megerCartInfo()
     }
 
-
-    // const megerCartInfo = async () => {
-    //     await megerCart(cartList.value.map(item => {
-    //         item.skuId,
-    //             item.count,
-    //             item.selected
-    //     }))
-    //     findNewCartList()
-    // }
+    const megerCartInfo = async () => {
+        await megerCart(cartList.value.map(item => {
+            return {
+                skuId: item.skuId,
+                count: item.count,
+                selected: item.selected
+            }
+        }))
+        findNewCartList();
+    }
     const clearInfo = () => {
         userInfo.value = {};
         clearCart()
